@@ -1,4 +1,4 @@
-import { FileX, Share as ShareIcon } from '@phosphor-icons/react';
+import { FileX, Share as ShareIcon, Terminal } from '@phosphor-icons/react';
 import { useMemo } from 'react';
 import { useBridgeMutation, useDiscoveredPeers, useSelector } from '@sd/client';
 import { ContextMenu, ModifierKeys } from '@sd/ui';
@@ -21,7 +21,7 @@ import OpenWith from './OpenWith';
 export const OpenOrDownload = new ConditionalItem({
 	useCondition: () => {
 		const { selectedFilePaths, selectedEphemeralPaths } = useContextMenuContext();
-		const { openFilePaths, openEphemeralFiles } = usePlatform();
+		const { openFilePaths, openEphemeralFiles, openTerminal } = usePlatform();
 
 		if (
 			!openFilePaths ||
@@ -30,15 +30,15 @@ export const OpenOrDownload = new ConditionalItem({
 		)
 			return null;
 
-		return { openFilePaths, openEphemeralFiles, selectedFilePaths, selectedEphemeralPaths };
+		return { openFilePaths, openEphemeralFiles, selectedFilePaths, selectedEphemeralPaths, openTerminal };
 	},
-	Component: () => {
+	Component: ({ openTerminal }) => {
 		const keybind = useKeybindFactory();
 		const { platform } = usePlatform();
 		const { doubleClick } = useViewItemDoubleClick();
 		const os = useOperatingSystem(true);
-
 		const { t } = useLocale();
+		const { selectedFilePaths, selectedEphemeralPaths } = useContextMenuContext();
 
 		if (platform === 'web') return <Menu.Item label={t('download')} />;
 		else
@@ -52,6 +52,18 @@ export const OpenOrDownload = new ConditionalItem({
 						onClick={() => doubleClick()}
 					/>
 					<Conditional items={[OpenWith]} />
+					{openTerminal && (
+						<Menu.Item
+							label={t('open_in_terminal')}
+							icon={Terminal}
+							onClick={() => {
+								const path = selectedFilePaths[0]?.path || selectedEphemeralPaths[0]?.path;
+								if (path) {
+									openTerminal(path);
+								}
+							}}
+						/>
+					)}
 				</>
 			);
 	}

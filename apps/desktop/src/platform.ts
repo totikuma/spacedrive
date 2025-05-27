@@ -88,5 +88,6 @@ export const platform = {
 		}
 	},
 	...commands,
-	landingApiOrigin: env.VITE_LANDING_ORIGIN
+	landingApiOrigin: env.VITE_LANDING_ORIGIN,
+	openTerminal: (path: string) => invoke('open_terminal', { path })
 } satisfies Omit<Platform, 'updater'>;

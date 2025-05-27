@@ -464,7 +464,7 @@
   "networking": "Netzwerk",
   "networking_error": "Starten des Netzwerks fehlgeschlagen!",
   "networking_port": "Netzwerk-Port",
-  "networking_port_description": "Der Port für das Peer-to-Peer-Netzwerk von Spacedrive zur Kommunikation. Du sollten dies deaktiviert lassen, es sei denn, Du haben eine restriktive Firewall. Nicht ins Internet freigeben!",
+  "networking_port_description": "Der Port für das Peer-to-Peer-Netzwerk von Spacedrive zur Kommunikation. Du solltest dies deaktiviert lassen, es sei denn, Du haben eine restriktive Firewall. Nicht ins Internet freigeben!",
   "new": "Neu",
   "new_folder": "Neuer Ordner",
   "new_library": "Neue Bibliothek",
@@ -744,5 +744,6 @@
   "your_privacy": "Deine Privatsphäre",
   "zoom": "Zoomen",
   "zoom_in": "Hereinzoomen",
-  "zoom_out": "Hinauszoomen"
+  "zoom_out": "Hinauszoomen",
+  "open_terminal": "Im Terminal öffnen"
 }

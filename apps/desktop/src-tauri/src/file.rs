@@ -450,3 +450,152 @@ pub async fn reveal_items(
 
 	Ok(())
 }
+
+#[tauri::command(async)]
+#[specta::specta]
+pub async fn open_terminal(path: String) -> Result<(), ()> {
+	#[cfg(target_os = "macos")]
+	{
+		use std::process::Command;
+
+		// macOSではopen -a Terminalを使う。将来的にはiTerm2などもサポート
+		let result = Command::new("open")
+			.arg("-a")
+			.arg("Terminal")
+			.arg(&path)
+			.spawn()
+			.map_err(|err| error!("Error opening terminal: {err:#?}"));
+
+		if let Err(err) = result {
+			return Err(());
+		}
+	}
+
+	#[cfg(target_os = "windows")]
+	{
+		use std::process::Command;
+
+		// Windows Terminalがインストールされているか確認
+		let wt_exists = Command::new("where")
+			.arg("wt")
+			.output()
+			.map(|output| output.status.success())
+			.unwrap_or(false);
+
+		// Windows Terminalが存在する場合はそれを使用
+		if wt_exists {
+			if let Err(err) = Command::new("wt")
+				.arg("-d")
+				.arg(&path)
+				.spawn()
+				.map_err(|err| error!("Error opening Windows Terminal: {err:#?}"))
+			{
+				// フォールバック: Windows Terminalが失敗したらcmd.exeを使用
+				if let Err(err) = Command::new("cmd.exe")
+					.arg("/c")
+					.arg("start")
+					.arg("cmd.exe")
+					.arg("/k")
+					.arg("cd")
+					.arg(&path)
+					.spawn()
+					.map_err(|err| error!("Error opening cmd: {err:#?}"))
+				{
+					return Err(());
+				}
+			}
+		} else {
+			// Windows Terminalがなければcmd.exeを使用
+			if let Err(err) = Command::new("cmd.exe")
+				.arg("/c")
+				.arg("start")
+				.arg("cmd.exe")
+				.arg("/k")
+				.arg("cd")
+				.arg(&path)
+				.spawn()
+				.map_err(|err| error!("Error opening cmd: {err:#?}"))
+			{
+				return Err(());
+			}
+		}
+	}
+
+	#[cfg(target_os = "linux")]
+	{
+		use std::{env, process::Command};
+
+		// 1. TERMINAL環境変数をチェック
+		if let Ok(terminal) = env::var("TERMINAL") {
+			let result = Command::new(terminal)
+				.arg(&path)
+				.spawn()
+				.map_err(|err| error!("Error opening terminal from $TERMINAL: {err:#?}"));
+
+			if result.is_ok() {
+				return Ok(());
+			}
+		}
+
+		// 2. update-alternativesをチェック (Debian系)
+		let update_alternatives = Command::new("update-alternatives")
+			.args(["--query", "x-terminal-emulator"])
+			.output()
+			.ok();
+
+		if let Some(output) = update_alternatives {
+			if output.status.success() {
+				let output_str = String::from_utf8_lossy(&output.stdout);
+				// Value: 行からパスを抽出
+				for line in output_str.lines() {
+					if line.starts_with("Value: ") {
+						let terminal_path = line.strip_prefix("Value: ").unwrap_or("");
+						if !terminal_path.is_empty() {
+							let result = Command::new(terminal_path)
+								.arg(&path)
+								.spawn()
+								.map_err(|err| error!("Error opening terminal from update-alternatives: {err:#?}"));
+
+							if result.is_ok() {
+								return Ok(());
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// 3. xdg-openをterminal:// URIでトライ
+		let xdg_result = Command::new("xdg-open")
+			.arg(format!("terminal://{}", &path))
+			.spawn()
+			.map_err(|err| error!("Error opening terminal with xdg-open: {err:#?}"));
+
+		if xdg_result.is_ok() {
+			return Ok(());
+		}
+
+		// 4. 一般的なターミナルエミュレータをトライ
+		for terminal in &["gnome-terminal", "konsole", "xfce4-terminal", "lxterminal", "mate-terminal", "xterm"] {
+			let args = if *terminal == "gnome-terminal" {
+				vec!["--working-directory", &path]
+			} else {
+				vec!["--workdir", &path]
+			};
+
+			let result = Command::new(terminal)
+				.args(&args)
+				.spawn()
+				.map_err(|err| error!("Error opening {}: {err:#?}", terminal));
+
+			if result.is_ok() {
+				return Ok(());
+			}
+		}
+
+		error!("Failed to open terminal - no suitable terminal emulator found");
+		return Err(());
+	}
+
+	Ok(())
+}

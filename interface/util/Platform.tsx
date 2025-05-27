@@ -73,6 +73,7 @@ export type Platform = {
 	};
 	auth: auth.ProviderConfig;
 	landingApiOrigin: string;
+	openTerminal?(path: string): Promise<void>;
 };
 
 export type Update = { version: string };

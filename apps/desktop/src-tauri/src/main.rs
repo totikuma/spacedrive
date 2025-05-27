@@ -210,6 +210,7 @@ async fn main() -> tauri::Result<()> {
 			file::open_file_path_with,
 			file::open_ephemeral_file_with,
 			file::reveal_items,
+			file::open_terminal,
 			theme::lock_app_theme,
 			updater::check_for_update,
 			updater::install_update

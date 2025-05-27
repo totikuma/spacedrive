@@ -195,7 +195,7 @@
   "empty_file": "Fichier vide",
   "enable_networking": "Activer le réseau",
   "enable_networking_description": "Autorisez votre nœud à communiquer avec d'autres nœuds Spacedrive autour de vous.",
-  "enable_networking_description_required": "Requis pour la synchronisation de la bibliothèque ou Spacedrop !",
+  "enable_networking_description_required": "Requis pour la synchronisation de la bibliothèque ou Spacedrop !",
   "enable_relay": "Activer le relais",
   "enable_relay_description": "Activez le serveur relais pour permettre à vos appareils de communiquer sur l'Internet public.",
   "enable_sync": "Activer la synchronisation",
@@ -566,10 +566,10 @@
   "reindex": "Réindexer",
   "reject": "Rejeter",
   "reject_files": "Reject files",
-  "relay_listeners_error": "Erreur lors de la création de l'écouteur de relais. Veuillez vérifier les paramètres de votre pare-feu !",
+  "relay_listeners_error": "Erreur lors de la création de l'écouteur de relais. Veuillez vérifier les paramètres de votre pare-feu !",
   "reload": "Recharger",
   "remote_access": "Activer l'accès à distance",
-  "remote_access_description": "Permettez à d’autres nœuds de se connecter directement à ce nœud.",
+  "remote_access_description": "Permettez à d'autres nœuds de se connecter directement à ce nœud.",
   "remote_identity": "Identité à distance",
   "remove": "Retirer",
   "remove_from_recents": "Retirer des récents",
@@ -745,5 +745,6 @@
   "your_privacy": "Votre confidentialité",
   "zoom": "Zoom",
   "zoom_in": "Zoom avant",
-  "zoom_out": "Zoom arrière"
+  "zoom_out": "Zoom arrière",
+  "open_terminal": "Ouvrir dans le Terminal"
 }

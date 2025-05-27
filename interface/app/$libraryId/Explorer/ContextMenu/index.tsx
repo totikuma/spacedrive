@@ -4,13 +4,20 @@ import { ExplorerItem } from '@sd/client';
 import { ContextMenu } from '@sd/ui';
 import { useLocale } from '~/hooks';
 import { isNonEmpty } from '~/util';
+import { Switch, Case } from '@sd/ui';
+import { explorerStore } from '../store';
 
 import { useExplorerContext } from '../Context';
 import { Conditional, type ConditionalGroupProps } from './ConditionalItem';
-import { ContextMenuContextProvider } from './context';
+import { ContextMenuContextProvider, useContextMenuContext } from './context';
 import * as FilePathItems from './FilePath/Items';
 import * as ObjectItems from './Object/Items';
 import * as SharedItems from './SharedItems';
+import { OneExplorer } from './OneExplorer';
+import OpenInFinder from './OpenInFinder';
+import OpenTerminal from './OpenTerminal';
+import { OpenWithMenu } from './OpenWithMenu';
+import { Paste } from './SharedItems';
 
 export * as FilePathItems from './FilePath/Items';
 export * as ObjectItems from './Object/Items';
@@ -71,7 +78,14 @@ export default (props: PropsWithChildren<{ items?: ExplorerItem[]; custom?: bool
 		[explorer.selectedItems, props.items]
 	);
 
-	if (!isNonEmpty(selectedItems)) return null;
+	// 選択されたアイテムがない場合は背景のコンテキストメニューを表示
+	if (!isNonEmpty(selectedItems)) {
+		return (
+			<ContextMenuContextProvider selectedItems={[]} as any>
+				<BackgroundItems />
+			</ContextMenuContextProvider>
+		);
+	}
 
 	return (
 		<ContextMenuContextProvider selectedItems={selectedItems}>
@@ -93,3 +107,23 @@ export const SeparatedConditional = ({ items, children }: ConditionalGroupProps)
 		)}
 	</Conditional>
 );
+
+export const BackgroundItems = () => {
+	const { locationId, path } = useContextMenuContext();
+	const isSearch = explorerStore.getState().isSearching;
+
+	return (
+		<>
+			<Switch>
+				<Case when={Boolean(locationId)}>
+					<Paste locationId={locationId!} path={path!} />
+				</Case>
+			</Switch>
+			{!isSearch && (
+				<>
+					<OpenTerminal />
+				</>
+			)}
+		</>
+	);
+};

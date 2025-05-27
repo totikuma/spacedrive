@@ -159,6 +159,14 @@ export const commands = {
 			else return { status: 'error', error: e as any };
 		}
 	},
+	async openTerminal(path: string): Promise<Result<null, null>> {
+		try {
+			return { status: 'ok', data: await TAURI_INVOKE('open_terminal', { path }) };
+		} catch (e) {
+			if (e instanceof Error) throw e;
+			else return { status: 'error', error: e as any };
+		}
+	},
 	async lockAppTheme(themeType: AppThemeType): Promise<void> {
 		await TAURI_INVOKE('lock_app_theme', { themeType });
 	},

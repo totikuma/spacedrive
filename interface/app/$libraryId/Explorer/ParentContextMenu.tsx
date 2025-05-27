@@ -8,7 +8,8 @@ import {
 	Notepad,
 	Repeat,
 	Share,
-	ShieldCheck
+	ShieldCheck,
+	Terminal
 } from '@phosphor-icons/react';
 import { PropsWithChildren } from 'react';
 import { useLibraryMutation, useSelector } from '@sd/client';
@@ -16,6 +17,8 @@ import { ContextMenu as CM, ModifierKeys, toast } from '@sd/ui';
 import { useLocale, useOperatingSystem } from '~/hooks';
 import { useQuickRescan } from '~/hooks/useQuickRescan';
 import { keybindForOs } from '~/util/keybinds';
+import { useLocation } from 'react-router';
+import { usePlatform } from '~/util/Platform';
 
 import { useExplorerContext } from './Context';
 import { CopyAsPathBase } from './CopyAsPath';
@@ -233,6 +236,16 @@ export default (props: PropsWithChildren) => {
 							label={t('reindex')}
 							icon={Repeat}
 						/>
+
+						{usePlatform().openTerminal && (
+							<CM.Item
+								onClick={() => {
+									usePlatform().openTerminal?.(`${parent.location.path}${currentPath ?? ''}`);
+								}}
+								label={t('open_terminal')}
+								icon={Terminal}
+							/>
+						)}
 
 						<CM.Item
 							onClick={async () => {
